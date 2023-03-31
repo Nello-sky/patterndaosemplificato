@@ -196,8 +196,40 @@ public class UserDAOImpl extends AbstractMySQLDAO implements UserDAO {
 
 	@Override
 	public List<User> findAllByCognome(String cognomeInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		
+		
+		if (cognomeInput == null || cognomeInput.isBlank()) {
+			throw new RuntimeException("non hai inserito nessun cognome");
+		}
+		
+		List<User> result = new ArrayList<>();
+		try (PreparedStatement ps = connection.prepareStatement("select * from user u where u.cognome = ? ;")) {
+
+			ps.setString(1, cognomeInput);
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					User userTemp = new User();
+					userTemp.setNome(rs.getString("NOME"));
+					userTemp.setCognome(rs.getString("COGNOME"));
+					userTemp.setLogin(rs.getString("LOGIN"));
+					userTemp.setPassword(rs.getString("PASSWORD"));
+					userTemp.setDateCreated(
+							rs.getDate("DATECREATED") != null ? rs.getDate("DATECREATED").toLocalDate() : null);
+					userTemp.setId(rs.getLong("ID"));
+					result.add(userTemp);
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
+
 	}
 
 	@Override

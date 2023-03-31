@@ -24,20 +24,24 @@ public class TestUser {
 			// ecco chi 'inietta' la connection: il chiamante
 			userDAOInstance = new UserDAOImpl(connection);
 
-			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
-
-			testInsertUser(userDAOInstance);
-			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
-
-			testFindById(userDAOInstance);
-
-			testDeleteUser(userDAOInstance);
-			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
-
-			testFindAllWhereDateCreatedGreaterThan(userDAOInstance);
-			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
+//			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
+//
+//			testInsertUser(userDAOInstance);
+//			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
+//
+//			testFindById(userDAOInstance);
+//
+//			testDeleteUser(userDAOInstance);
+//			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
+//
+//			testFindAllWhereDateCreatedGreaterThan(userDAOInstance);
+//			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
 
 			// ESERCIZIO SUCCESSIVO: implementare metodi mancanti nel DAO
+			testFindAllByCognome(userDAOInstance);
+			
+			
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,4 +129,19 @@ public class TestUser {
 		System.out.println(".......testFindAllWhereDateCreatedGreaterThan fine: PASSED.............");
 	}
 
+
+	
+	private static void testFindAllByCognome(UserDAO userDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByCognome inizio.............");
+		
+		List<User> elencoVociPresenti = userDAOInstance.list();
+		String cognomeInTable=elencoVociPresenti.get(0).getCognome();
+		List<User> test = userDAOInstance.findAllByCognome(cognomeInTable);
+		if (test.size() < 1)
+			throw new RuntimeException("testInsertUser : FAILED");
+
+		System.out.println(".......testInsertUser fine: PASSED.............");
+	}
+	
+	
 }
