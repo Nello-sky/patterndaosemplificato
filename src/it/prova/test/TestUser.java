@@ -38,7 +38,20 @@ public class TestUser {
 //			System.out.println("In tabella user ci sono " + userDAOInstance.list().size() + " elementi.");
 
 			// ESERCIZIO SUCCESSIVO: implementare metodi mancanti nel DAO
-			testFindAllByCognome(userDAOInstance);
+			
+//			testFindAllByCognome(userDAOInstance);
+//			System.out.println(userDAOInstance.findAllByCognome("porto"));
+			
+//			testFindAllByLoginIniziaCon(userDAOInstance);
+//			System.out.println(userDAOInstance.findAllByLoginIniziaCon("m"));
+			
+//			testFindByLoginAndPassword(userDAOInstance);
+//			System.out.println(userDAOInstance.findByLoginAndPassword("aa25", "w10"));
+			
+//			testFindAllByPasswordIsNull(userDAOInstance);
+//			System.err.println(userDAOInstance.findAllByPasswordIsNull());
+			
+			
 			
 			
 			
@@ -135,12 +148,61 @@ public class TestUser {
 		System.out.println(".......testFindAllByCognome inizio.............");
 		
 		List<User> elencoVociPresenti = userDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("testFindAllByCognome : FAILED, non ci sono voci sul DB");
+		
 		String cognomeInTable=elencoVociPresenti.get(0).getCognome();
 		List<User> test = userDAOInstance.findAllByCognome(cognomeInTable);
 		if (test.size() < 1)
-			throw new RuntimeException("testInsertUser : FAILED");
+			throw new RuntimeException("testFindAllByCognome : FAILED");
 
-		System.out.println(".......testInsertUser fine: PASSED.............");
+		System.out.println(".......testFindAllByCognome fine: PASSED.............");
+	}
+	
+	private static void testFindAllByLoginIniziaCon(UserDAO userDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByLoginIniziaCon inizio.............");
+		
+		List<User> elencoVociPresenti = userDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("testFindAllByLoginIniziaCon : FAILED, non ci sono voci sul DB");
+		
+		String iniziale= String.valueOf(elencoVociPresenti.get(0).getNome().charAt(0)) ;
+		List<User> test = userDAOInstance.findAllByLoginIniziaCon(iniziale);
+		if (test.size() < 1)
+			throw new RuntimeException("testFindAllByLoginIniziaCon : FAILED");
+
+		System.out.println(".......testFindAllByLoginIniziaCon fine: PASSED.............");
+	}
+	
+	private static void testFindByLoginAndPassword(UserDAO userDAOInstance) throws Exception {
+		System.out.println(".......testFindByLoginAndPassword inizio.............");
+		
+		List<User> elencoVociPresenti = userDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("testFindByLoginAndPassword : FAILED, non ci sono voci sul DB");
+		
+		String LoginInTable=elencoVociPresenti.get(0).getLogin();
+		String PasswordInTable=elencoVociPresenti.get(0).getPassword();
+		User test = userDAOInstance.findByLoginAndPassword(LoginInTable,PasswordInTable);
+		if (test == null)
+			throw new RuntimeException("testFindByLoginAndPassword : FAILED");
+
+		System.out.println(".......testFindByLoginAndPassword fine: PASSED.............");
+	}
+	
+	private static void testFindAllByPasswordIsNull(UserDAO userDAOInstance) throws Exception {
+		System.out.println(".......testFindAllByPasswordIsNull inizio.............");
+		
+		List<User> elencoVociPresenti = userDAOInstance.list();
+		if (elencoVociPresenti.size() < 1)
+			throw new RuntimeException("testFindAllByPasswordIsNull : FAILED, non ci sono voci sul DB");
+		
+		
+		List<User> test = userDAOInstance.findAllByPasswordIsNull();
+		if (test.size() < 1)
+			throw new RuntimeException("testFindAllByPasswordIsNull : FAILED");
+
+		System.out.println(".......testFindAllByPasswordIsNull fine: PASSED.............");
 	}
 	
 	

@@ -206,7 +206,7 @@ public class UserDAOImpl extends AbstractMySQLDAO implements UserDAO {
 		}
 		
 		List<User> result = new ArrayList<>();
-		try (PreparedStatement ps = connection.prepareStatement("select * from user u where u.cognome = ? ;")) {
+		try (PreparedStatement ps = connection.prepareStatement("select * from user u where u.cognome like ? ;")) {
 
 			ps.setString(1, cognomeInput);
 
@@ -234,20 +234,109 @@ public class UserDAOImpl extends AbstractMySQLDAO implements UserDAO {
 
 	@Override
 	public List<User> findAllByLoginIniziaCon(String caratteriInizialiInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		
+		
+		if (caratteriInizialiInput == null || caratteriInizialiInput.isBlank()) {
+			throw new RuntimeException("non hai inserito nessun login");
+		}
+		
+		List<User> result = new ArrayList<>();
+		try (PreparedStatement ps = connection.prepareStatement("select * from user u where u.login like ? ;")) {
+
+			ps.setString(1, caratteriInizialiInput + "%");
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					User userTemp = new User();
+					userTemp.setNome(rs.getString("NOME"));
+					userTemp.setCognome(rs.getString("COGNOME"));
+					userTemp.setLogin(rs.getString("LOGIN"));
+					userTemp.setPassword(rs.getString("PASSWORD"));
+					userTemp.setDateCreated(
+							rs.getDate("DATECREATED") != null ? rs.getDate("DATECREATED").toLocalDate() : null);
+					userTemp.setId(rs.getLong("ID"));
+					result.add(userTemp);
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public User findByLoginAndPassword(String loginInput, String passwordInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (loginInput == null || loginInput.isBlank() 
+				|| passwordInput == null || passwordInput.isBlank())
+			throw new Exception("Valore degli input non ammesso.");
+
+		User result = null;
+		try (PreparedStatement ps = connection.prepareStatement("select *from user u where u.login like ? and u.password like ? ;")) {
+
+			ps.setString(1, loginInput);
+			ps.setString(2, passwordInput);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					result = new User();
+					result.setNome(rs.getString("NOME"));
+					result.setCognome(rs.getString("COGNOME"));
+					result.setLogin(rs.getString("LOGIN"));
+					result.setPassword(rs.getString("PASSWORD"));
+					result.setDateCreated(
+							rs.getDate("DATECREATED") != null ? rs.getDate("DATECREATED").toLocalDate() : null);
+					result.setId(rs.getLong("ID"));
+				} else {
+					result = null;
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
 	public List<User> findAllByPasswordIsNull() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		
+		
+		List<User> result = new ArrayList<>();
+		try (PreparedStatement ps = connection.prepareStatement("select * from user u where u.password is null; ")) {
+
+			//ps.setString(1, null);
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					User userTemp = new User();
+					userTemp.setNome(rs.getString("NOME"));
+					userTemp.setCognome(rs.getString("COGNOME"));
+					userTemp.setLogin(rs.getString("LOGIN"));
+					userTemp.setPassword(rs.getString("PASSWORD"));
+					userTemp.setDateCreated(
+							rs.getDate("DATECREATED") != null ? rs.getDate("DATECREATED").toLocalDate() : null);
+					userTemp.setId(rs.getLong("ID"));
+					result.add(userTemp);
+				}
+			} // niente catch qui
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	@Override
